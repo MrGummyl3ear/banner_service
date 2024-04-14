@@ -23,6 +23,15 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		auth.POST("/sign-in", h.signIn)
 	}
 
+	banner := router.Group("/banner")
+	{
+		banner.GET("", h.adminIdentity, h.getAllBanners)
+		banner.POST("", h.adminIdentity, h.createBanner)
+		banner.PATCH("/:id", h.adminIdentity, h.modifyBanner)
+		banner.DELETE("/:id", h.adminIdentity, h.deleteBanner)
+	}
+
+	router.GET("/user_banner", h.userIdentity, h.getUserBanner)
 
 	return router
 }

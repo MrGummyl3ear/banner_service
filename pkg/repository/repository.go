@@ -7,16 +7,27 @@ import (
 )
 
 type Authorization interface {
-	CreateUser(user model.User) (int, error)
-	GetUser(username, password string) (model.User, error)
+	CreateUser(user model.User, role string) (int, error)
+	GetUser(username, password string) ([]string, error)
+}
+
+type Banner interface {
+	CreateBanner(banner model.Banner) (int, error)
+	GetUserBanner(query model.UserGet) (model.JSONB, error)
+	GetAllBanners(query model.AdminGet) ([]model.Banner, error) 
+	UpdateBanner(banner model.Banner) error
+	DeleteBanner(id int) error
+	FindId(id int) error
 }
 
 type Repository struct {
 	Authorization
+	Banner
 }
 
 func NewRepository(db *gorm.DB) *Repository {
 	return &Repository{
 		Authorization: NewAuthPostgres(db),
+		Banner:        NewBannerPostgres(db),
 	}
 }
