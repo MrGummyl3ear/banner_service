@@ -1,0 +1,24 @@
+version: '3.3'
+
+services:
+  db:
+    container_name: 'banner_postgres'
+    image: postgres:12-alpine
+    restart: always
+    environment:
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=qwerty
+    ports:
+      - '5436:5432'
+    volumes:
+      - ./scripts/structer.sql:/docker-entrypoint-initdb.d/structer.sql
+
+  server:
+    container_name: 'banner_service'
+    image: 'banner'
+    depends_on:
+      - db
+    ports:
+      - '8000:8000'

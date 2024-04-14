@@ -14,7 +14,7 @@ type Banner struct {
 	TagIds    pq.Int64Array `json:"tag_ids" gorm:"uniqueIndex:banner_id;type:integer[]"`
 	FeatureId int           `json:"feature_id"  gorm:"uniqueIndex:banner_id;"`
 	Content   JSONB         `json:"content"  gorm:"type:jsonb"`
-	IsActive  *bool          `json:"is_active" gorm:""` //проблема
+	IsActive  *bool         `json:"is_active" gorm:""`
 	CreatedAt time.Time     `gorm:""`
 	UpdatedAt time.Time     `gorm:""`
 }

@@ -44,6 +44,7 @@ func (h *Handler) userIdentity(c *gin.Context) {
 
 	for _, permission := range permissions {
 		if Access[permission] >= userRole {
+			c.Set("access", permission)
 			return
 		}
 	}
@@ -76,6 +77,7 @@ func (h *Handler) adminIdentity(c *gin.Context) {
 	}
 	for _, permission := range permissions {
 		if Access[permission] >= adminRole {
+			c.Set("access", permission)
 			return
 		}
 	}

@@ -27,16 +27,16 @@ func (r *BannerPostgres) CreateBanner(banner model.Banner) (int, error) {
 	return banner.Id, tx.Commit().Error
 }
 
-func (r *BannerPostgres) GetUserBanner(query model.UserGet) (model.JSONB, error) {
+func (r *BannerPostgres) GetUserBanner(query model.UserGet) (model.Banner, error) {
 	var err error
 	var result model.Banner
 	tx := r.db.Begin()
 	err = tx.Where("? = any(tag_ids) and feature_id = ?", query.TagId, query.FeatureId).First(&result).Error
 	if err != nil {
 		tx.Rollback()
-		return nil, err
+		return result, err
 	}
-	return result.Content, tx.Commit().Error
+	return result, tx.Commit().Error
 }
 
 func (r *BannerPostgres) GetAllBanners(query model.AdminGet) ([]model.Banner, error) {

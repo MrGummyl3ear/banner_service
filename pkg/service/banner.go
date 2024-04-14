@@ -17,7 +17,7 @@ func (s *BannerService) CreateBanner(banner model.Banner) (int, error) {
 	return s.repo.CreateBanner(banner)
 }
 
-func (s *BannerService) GetUserBanner(query model.UserGet) (model.JSONB, error) {
+func (s *BannerService) GetUserBanner(query model.UserGet) (model.Banner, error) {
 	return s.repo.GetUserBanner(query)
 }
 

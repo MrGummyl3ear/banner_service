@@ -15,7 +15,7 @@ type Authorization interface {
 
 type Banner interface {
 	CreateBanner(banner model.Banner) (int, error)
-	GetUserBanner(query model.UserGet) (model.JSONB, error)
+	GetUserBanner(query model.UserGet) (model.Banner, error)
 	GetAllBanners(query model.AdminGet) ([]model.Banner,error)
 	UpdateBanner(banner model.Banner) error
 	DeleteBanner(id int) error

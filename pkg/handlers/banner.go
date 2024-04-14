@@ -95,7 +95,7 @@ func (h *Handler) modifyBanner(c *gin.Context) {
 
 func (h *Handler) getUserBanner(c *gin.Context) {
 	var form model.UserGet
-	var content model.JSONB
+	var result model.Banner
 	var err error
 	form.UseLastRevision = false
 
@@ -104,12 +104,19 @@ func (h *Handler) getUserBanner(c *gin.Context) {
 		return
 	}
 
-	content, err = h.services.Banner.GetUserBanner(form)
+	result, err = h.services.Banner.GetUserBanner(form)
 	if err != nil {
-		newErrorResponse(c, 404, err.Error())
+		newErrorResponse(c, http.StatusNotFound, err.Error())
+		return
 	}
 
-	c.JSON(http.StatusOK, content)
+	access, ok := c.Get("access")
+	if *result.IsActive == false && (access != "Admin" || !ok) {
+		newErrorResponse(c, http.StatusNotFound, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, result.Content)
 }
 
 func (h *Handler) deleteBanner(c *gin.Context) {
@@ -131,5 +138,5 @@ func (h *Handler) deleteBanner(c *gin.Context) {
 	if err != nil {
 		newErrorResponse(c, 500, err.Error())
 	}
-	c.JSON(204, nil)
+	c.JSON(204, "the banner is deleted")
 }
