@@ -10,13 +10,13 @@ services:
       - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=qwerty
-    ports:
-      - '5436:5432'
     volumes:
       - ./scripts/structer.sql:/docker-entrypoint-initdb.d/structer.sql
 
   server:
     container_name: 'banner_service'
+    build: ./
+    command: ./avito-app
     image: 'banner'
     depends_on:
       - db

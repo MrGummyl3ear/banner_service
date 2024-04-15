@@ -1,7 +1,4 @@
-.PHONY:lint df service_up run
-
-lint:
-	golangci-lint run ./... --config=./config/.golangci.yml --fast
+.PHONY:df service_up run
 
 df:
 	docker build --tag banner .
@@ -11,3 +8,6 @@ service_up:
 
 run:
 	go run ./cmd/main.go
+
+lint:
+	golangci-lint run ./... --config=./config/.golangci.yml --fast

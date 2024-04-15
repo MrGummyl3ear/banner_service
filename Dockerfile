@@ -1,8 +1,10 @@
-FROM golang:latest
-RUN mkdir /app
-ADD . /app/
-WORKDIR /app
+FROM golang:1.21.7-alpine
+
+RUN go version
+ENV GOPATH=/
+
+COPY ./ ./
 RUN go mod download
-RUN go mod tidy
-RUN go build ./cmd
-ENTRYPOINT /app
+RUN go build -o avito-app ./cmd/main.go
+
+CMD ["./avito-app"]
