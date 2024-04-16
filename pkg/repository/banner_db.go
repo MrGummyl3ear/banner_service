@@ -56,7 +56,7 @@ func (r *BannerPostgres) GetAllBanners(query model.AdminGet) ([]model.Banner, er
 	return result, tx.Commit().Error
 }
 
-func (r *BannerPostgres) UpdateBanner(banner model.Banner) error {
+func (r *BannerPostgres) UpdateBanner(banner model.PatchBanner) error {
 	var err error
 	tx := r.db.Begin()
 	updates := make(map[string]interface{})

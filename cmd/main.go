@@ -2,6 +2,7 @@ package main
 
 import (
 	banner "banner_service"
+	"banner_service/pkg/cache"
 	handler "banner_service/pkg/handlers"
 	"banner_service/pkg/model"
 	"banner_service/pkg/repository"
@@ -9,6 +10,7 @@ import (
 	"context"
 	"os"
 	"os/signal"
+	"strconv"
 	"syscall"
 
 	"github.com/joho/godotenv"
@@ -39,7 +41,17 @@ func main() {
 		Password: service.GeneratePasswordHash(os.Getenv("DB_Admin_Password"))},
 		"Admin")
 
-	services := service.NewService(repos)
+	rDB, _ := strconv.Atoi(os.Getenv("Redis_DB"))
+	redisDB, err := cache.NewRedis(cache.Config{
+		Host: os.Getenv("Redis_Host"),
+		Port: os.Getenv("Redis_Port"),
+		DB:   rDB,
+	})
+	if err != nil {
+		logrus.Fatalf("failed to initialize Redis: %s ", err)
+	}
+
+	services := service.NewService(repos, redisDB)
 	handlers := handler.NewHandler(services)
 
 	srv := new(banner.Server)

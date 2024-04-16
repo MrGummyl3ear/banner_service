@@ -20,5 +20,12 @@ services:
     image: 'banner'
     depends_on:
       - db
+      - cache
     ports:
       - '8000:8000'
+
+  cache:
+    restart: always
+    image: redis:7.2.4-bookworm
+    ports:
+      - 6379:6379

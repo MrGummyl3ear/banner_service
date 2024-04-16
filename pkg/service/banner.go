@@ -1,16 +1,18 @@
 package service
 
 import (
+	"banner_service/pkg/cache"
 	"banner_service/pkg/model"
 	"banner_service/pkg/repository"
 )
 
 type BannerService struct {
-	repo repository.Banner
+	repo  repository.Banner
+	cache cache.Cache
 }
 
-func NewBannerService(repo repository.Banner) *BannerService {
-	return &BannerService{repo: repo}
+func NewBannerService(repo repository.Banner, cacheInstance cache.Cache) *BannerService {
+	return &BannerService{repo: repo, cache: cacheInstance}
 }
 
 func (s *BannerService) CreateBanner(banner model.Banner) (int, error) {
@@ -18,14 +20,27 @@ func (s *BannerService) CreateBanner(banner model.Banner) (int, error) {
 }
 
 func (s *BannerService) GetUserBanner(query model.UserGet) (model.Banner, error) {
-	return s.repo.GetUserBanner(query)
+	if query.UseLastRevision {
+		data, err := s.cache.ReadBanner(query)
+		if err == nil {
+			return data, nil
+		}
+	}
+
+	data, err := s.repo.GetUserBanner(query)
+	if err != nil {
+		return data, err
+	}
+
+	err = s.cache.WriteBanner(data)
+	return data, err
 }
 
 func (s *BannerService) GetAllBanners(query model.AdminGet) ([]model.Banner, error) {
 	return s.repo.GetAllBanners(query)
 }
 
-func (s *BannerService) UpdateBanner(banner model.Banner) error {
+func (s *BannerService) UpdateBanner(banner model.PatchBanner) error {
 	return s.repo.UpdateBanner(banner)
 }
 

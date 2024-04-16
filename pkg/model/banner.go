@@ -14,9 +14,19 @@ type Banner struct {
 	TagIds    pq.Int64Array `json:"tag_ids" gorm:"uniqueIndex:banner_id;type:integer[]"`
 	FeatureId int           `json:"feature_id"  gorm:"uniqueIndex:banner_id;"`
 	Content   JSONB         `json:"content"  gorm:"type:jsonb"`
+	IsActive  bool          `json:"is_active" gorm:""`
+	CreatedAt time.Time     `json:"created_at,omitempty" gorm:""`
+	UpdatedAt time.Time     `json:"updated_at,omitempty" gorm:""`
+}
+
+type PatchBanner struct {
+	Id        int           `json:"-" gorm:"primaryKey"`
+	TagIds    pq.Int64Array `json:"tag_ids" gorm:"uniqueIndex:banner_id;type:integer[]"`
+	FeatureId int           `json:"feature_id"  gorm:"uniqueIndex:banner_id;"`
+	Content   JSONB         `json:"content"  gorm:"type:jsonb"`
 	IsActive  *bool         `json:"is_active" gorm:""`
-	CreatedAt time.Time     `gorm:""`
-	UpdatedAt time.Time     `gorm:""`
+	CreatedAt time.Time     `json:"created_at,omitempty" gorm:""`
+	UpdatedAt time.Time     `json:"updated_at,omitempty" gorm:""`
 }
 
 // JSONB Interface for JSONB Field of yourTableName Table
@@ -34,4 +44,12 @@ func (a *JSONB) Scan(value interface{}) error {
 		return errors.New("type assertion to []byte failed")
 	}
 	return json.Unmarshal(b, &a)
+}
+
+func (b Banner) MarshalBinary() ([]byte, error) {
+	return json.Marshal(b)
+}
+
+func (b Banner) UnmarshalBinary(data []byte) error {
+	return json.Unmarshal(data, &b)
 }

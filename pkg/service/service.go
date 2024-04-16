@@ -1,6 +1,7 @@
 package service
 
 import (
+	"banner_service/pkg/cache"
 	"banner_service/pkg/model"
 	"banner_service/pkg/repository"
 )
@@ -16,8 +17,8 @@ type Authorization interface {
 type Banner interface {
 	CreateBanner(banner model.Banner) (int, error)
 	GetUserBanner(query model.UserGet) (model.Banner, error)
-	GetAllBanners(query model.AdminGet) ([]model.Banner,error)
-	UpdateBanner(banner model.Banner) error
+	GetAllBanners(query model.AdminGet) ([]model.Banner, error)
+	UpdateBanner(banner model.PatchBanner) error
 	DeleteBanner(id int) error
 	FindId(id int) error
 }
@@ -27,9 +28,9 @@ type Service struct {
 	Banner
 }
 
-func NewService(repos *repository.Repository) *Service {
+func NewService(repos *repository.Repository, cacheInstance cache.Cache) *Service {
 	return &Service{
 		Authorization: NewAuthService(repos.Authorization),
-		Banner:        NewBannerService(repos.Banner),
+		Banner:        NewBannerService(repos.Banner, cacheInstance),
 	}
 }

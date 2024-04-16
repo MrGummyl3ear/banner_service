@@ -58,7 +58,7 @@ func (h *Handler) createBanner(c *gin.Context) {
 func (h *Handler) modifyBanner(c *gin.Context) {
 	var err error
 	var id int
-	var input model.Banner
+	var input model.PatchBanner
 
 	if err := c.BindJSON(&input); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, "invalid input body")
@@ -111,7 +111,7 @@ func (h *Handler) getUserBanner(c *gin.Context) {
 	}
 
 	access, ok := c.Get("access")
-	if *result.IsActive == false && (access != "Admin" || !ok) {
+	if result.IsActive == false && (access != "Admin" || !ok) {
 		newErrorResponse(c, http.StatusNotFound, err.Error())
 		return
 	}

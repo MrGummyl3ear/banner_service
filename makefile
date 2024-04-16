@@ -1,6 +1,6 @@
 .PHONY:df service_up run
 
-df:
+image_up:
 	docker build --tag banner .
 
 service_up:
