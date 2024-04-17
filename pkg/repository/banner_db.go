@@ -58,6 +58,7 @@ func (r *BannerPostgres) GetAllBanners(query model.AdminGet) ([]model.Banner, er
 
 func (r *BannerPostgres) UpdateBanner(banner model.PatchBanner) error {
 	var err error
+	var input model.Banner
 	tx := r.db.Begin()
 	updates := make(map[string]interface{})
 
@@ -78,8 +79,9 @@ func (r *BannerPostgres) UpdateBanner(banner model.PatchBanner) error {
 	}
 
 	updates["updated_at"] = banner.UpdatedAt
+	input.Id = banner.Id
 
-	err = tx.Model(&banner).Updates(updates).Error
+	err = tx.Model(&input).Updates(updates).Error
 	if err != nil {
 		tx.Rollback()
 		return err

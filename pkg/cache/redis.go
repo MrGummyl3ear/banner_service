@@ -5,7 +5,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"log/slog"
 	"time"
 
 	"github.com/lib/pq"
@@ -41,7 +40,6 @@ func NewRedis(cfg Config) (*RedisCache, error) {
 func (r *RedisCache) WriteBanner(data model.Banner) error {
 	bannerKey := r.configureRedisKey(data.FeatureId, data.TagIds)
 	err := r.cli.Set(context.Background(), bannerKey, data, TTLCache).Err()
-	slog.Info("REDIS: Save banner in cache")
 
 	return err
 }

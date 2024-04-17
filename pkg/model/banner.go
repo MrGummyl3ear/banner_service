@@ -11,12 +11,12 @@ import (
 
 type Banner struct {
 	Id        int           `json:"-" gorm:"primaryKey"`
-	TagIds    pq.Int64Array `json:"tag_ids" gorm:"uniqueIndex:banner_id;type:integer[]"`
-	FeatureId int           `json:"feature_id"  gorm:"uniqueIndex:banner_id;"`
+	TagIds    pq.Int64Array `json:"tag_ids" gorm:"Index:banner_id;type:integer[]"`
+	FeatureId int           `json:"feature_id"  gorm:"Index:banner_id;"`
 	Content   JSONB         `json:"content"  gorm:"type:jsonb"`
 	IsActive  bool          `json:"is_active" gorm:""`
-	CreatedAt time.Time     `json:"created_at,omitempty" gorm:""`
-	UpdatedAt time.Time     `json:"updated_at,omitempty" gorm:""`
+	CreatedAt time.Time     `json:"created_at" gorm:""`
+	UpdatedAt time.Time     `json:"updated_at" gorm:""`
 }
 
 type PatchBanner struct {

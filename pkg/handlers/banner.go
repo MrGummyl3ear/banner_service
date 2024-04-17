@@ -2,6 +2,7 @@ package handler
 
 import (
 	"banner_service/pkg/model"
+	"fmt"
 	"net/http"
 	"sort"
 	"strconv"
@@ -19,18 +20,30 @@ func (h *Handler) getAllBanners(c *gin.Context) {
 		return
 	}
 
+	workHash := fmt.Sprintf("banner:%d+%d", form.Offset, form.Limit)
+
 	if form.Offset == 0 {
 		form.Offset = -1
 	}
 	if form.Limit == 0 {
 		form.Limit = -1
 	}
+	if form.FeatureId != 0 {
+		workHash += fmt.Sprintf("+f%d", form.FeatureId)
+	}
+	if form.TagId != 0 {
+		workHash += fmt.Sprintf("+t%d", form.TagId)
+	}
 
-	banners, err = h.services.GetAllBanners(form)
+	v, err, _ := h.singleflight.Do(workHash, func() (interface{}, error) {
+		return h.services.Banner.GetAllBanners(form)
+	})
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
+
+	banners = v.([]model.Banner)
 
 	c.JSON(http.StatusOK, banners)
 }
@@ -104,7 +117,12 @@ func (h *Handler) getUserBanner(c *gin.Context) {
 		return
 	}
 
-	result, err = h.services.Banner.GetUserBanner(form)
+	workHash := fmt.Sprintf("banner:%d+%d+%t", form.TagId, form.FeatureId, form.UseLastRevision)
+	v, err, _ := h.singleflight.Do(workHash, func() (interface{}, error) {
+		return h.services.Banner.GetUserBanner(form)
+	})
+
+	result = v.(model.Banner)
 	if err != nil {
 		newErrorResponse(c, http.StatusNotFound, err.Error())
 		return
