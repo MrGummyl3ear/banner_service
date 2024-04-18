@@ -12,6 +12,8 @@ services:
       - POSTGRES_PASSWORD=qwerty
     volumes:
       - ./scripts/structer.sql:/docker-entrypoint-initdb.d/structer.sql
+    ports:
+      - '5432:5432'
 
   server:
     container_name: 'banner_service'

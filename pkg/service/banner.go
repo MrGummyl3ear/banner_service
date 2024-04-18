@@ -20,10 +20,10 @@ func (s *BannerService) CreateBanner(banner model.Banner) (int, error) {
 }
 
 func (s *BannerService) GetUserBanner(query model.UserGet) (model.Banner, error) {
-	if query.UseLastRevision {
+	if !query.UseLastRevision {
 		data, err := s.cache.ReadBanner(query)
 		if err == nil {
-			return data, nil
+			return data, err
 		}
 	}
 
@@ -32,7 +32,8 @@ func (s *BannerService) GetUserBanner(query model.UserGet) (model.Banner, error)
 		return data, err
 	}
 
-	err = s.cache.WriteBanner(data)
+	go s.cache.WriteBanner(data)
+
 	return data, err
 }
 

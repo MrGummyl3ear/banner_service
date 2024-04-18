@@ -24,23 +24,23 @@ export const options = {
 
 export default function () {
 
-    const authToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTMzOTEwMTMsImlhdCI6MTcxMzM0NzgxMywicm9sZXMiOlsiQWRtaW4iXX0.gRHtrFxguw3Hg6KenLrGRLq_X7w9gBnwCYILu_JzTgk';
+    const authToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTM0ODI3OTgsImlhdCI6MTcxMzQzOTU5OCwicm9sZXMiOlsiQWRtaW4iXX0.GQZdQNgcns574jzQDaQj5ATEI_I5DM129FAZxQ7Ro0Y';
 
     const banner = randomItem(banners);
     const tagID = randomItem(banner.tag_ids);
-    const limit = randomIntBetween(0, 100);
-    const offset = randomIntBetween(0, 100);
-    const pattern = 2;
+    const limit = randomIntBetween(0, 30);
+    const offset = randomIntBetween(0, 30);
+    const pattern = randomIntBetween(1,3);
 
     let url = http.url``;
     if (pattern == 1){
-        url = http.url`http://localhost:8000/banner?feature_id=${banner.feature_id}&tag_id=${tagID}&limit=${limit}&offset=${offset}`;
+        url = `http://localhost:8000/banner?feature_id=${banner.feature_id}&tag_id=${tagID}&limit=${limit}&offset=${offset}`;
     }
     if (pattern == 2){
-        url = http.url`http://localhost:8000/banner?feature_id=${banner.feature_id}&limit=${limit}&offset=${offset}`;
+        url = `http://localhost:8000/banner?feature_id=${banner.feature_id}&limit=${limit}&offset=${offset}`;
     }   
     if (pattern == 3){
-        url = http.url`http://localhost:8000/banner?limit=${limit}&offset=${offset}`;
+        url = `http://localhost:8000/banner?limit=${limit}&offset=${offset}`;
     }
     const params = {
         headers: {

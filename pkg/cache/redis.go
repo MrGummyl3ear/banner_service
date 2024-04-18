@@ -6,8 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"time"
-
-	"github.com/lib/pq"
 	"github.com/redis/go-redis/v9"
 )
 
@@ -38,15 +36,20 @@ func NewRedis(cfg Config) (*RedisCache, error) {
 }
 
 func (r *RedisCache) WriteBanner(data model.Banner) error {
-	bannerKey := r.configureRedisKey(data.FeatureId, data.TagIds)
-	err := r.cli.Set(context.Background(), bannerKey, data, TTLCache).Err()
-
+	var err error
+	for _, tag := range data.TagIds {
+		bannerKey := r.configureRedisKey(data.FeatureId, tag)
+		err := r.cli.Set(context.Background(), bannerKey, data, TTLCache).Err()
+		if err != nil {
+			return err
+		}
+	}
 	return err
 }
 
 func (r *RedisCache) ReadBanner(input model.UserGet) (model.Banner, error) {
 	var banner model.Banner
-	bannerKey := r.configureRedisKey(input.FeatureId, pq.Int64Array{int64(input.TagId)})
+	bannerKey := r.configureRedisKey(input.FeatureId, int64(input.TagId))
 	res, err := r.cli.Get(context.Background(), bannerKey).Result()
 	if err != nil {
 		return banner, err
@@ -59,11 +62,9 @@ func (r *RedisCache) ReadBanner(input model.UserGet) (model.Banner, error) {
 	return banner, err
 }
 
-func (r *RedisCache) configureRedisKey(featureId int, tagIds pq.Int64Array) string {
+func (r *RedisCache) configureRedisKey(featureId int, tagId int64) string {
 	bannerKey := fmt.Sprintf("featureId=%d", featureId)
-	for i, tag := range tagIds {
-		bannerKey += fmt.Sprintf("tagId%d=%d", i+1, tag)
-	}
+	bannerKey += fmt.Sprintf("tagId=%d", tagId)
 	return bannerKey
 }
 

@@ -26,7 +26,7 @@ export const options = {
 
 export default function () {
 
-    const authToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTMzOTEwMTMsImlhdCI6MTcxMzM0NzgxMywicm9sZXMiOlsiQWRtaW4iXX0.gRHtrFxguw3Hg6KenLrGRLq_X7w9gBnwCYILu_JzTgk';
+    const authToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTM0ODI3OTgsImlhdCI6MTcxMzQzOTU5OCwicm9sZXMiOlsiQWRtaW4iXX0.GQZdQNgcns574jzQDaQj5ATEI_I5DM129FAZxQ7Ro0Y';
 
     const banner = randomItem(banners);
 
