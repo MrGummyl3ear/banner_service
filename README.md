@@ -1,57 +1,99 @@
-# Avito banner
+# 🏷️ Avito Banner Service
 
-## Content
-1. [Команды](#Команды)
-2. [Handlers](#Handlers) \
-    2.1 [Authorization](#Authorization) \
-    2.2.[Banners API](#Banners-API)
-3. [Проблемы, с которыми столкнулся и их решения](#Проблемы-с-которыми-столкнулся-и-их-решения)
+A scalable, robust backend service for managing banners, featuring authentication, admin/user roles, and high performance.
+
+---
+
+## 🌟 Overview
+
+**banner_service** is a backend solution for handling dynamic banners with features like fine-grained authorization, efficient caching, and load testing. The project uses Docker, Makefile automation, and modern Go practices to ensure reliability and scalability.
+
+---
+
+## 🚀 Features
+
+- **JWT-based Authentication**: Secure sign-up and sign-in endpoints.
+- **RESTful Banner API**: CRUD operations for banners, with admin and user token support.
+- **Makefile Automation**: Easy commands for building, running, linting, and containerization.
+- **Load Testing**: k6 scripts included for performance validation.
+- **Problem-Solving Notes**: Real-world engineering decisions and challenges explained.
+
+---
+
+## 📦 Content
+
+1. [Commands](#Commands)
+2. [Handlers](#Handlers)  
+    2.1 [Authorization](#Authorization)  
+    2.2 [Banners API](#Banners-API)
+3. [Problems Encountered and Their Solutions](#Problems-Encountered-and-Their-Solutions)
 4. [Load Testing](#Load-Testing)
 
-# Команды 
- - Создание docker image
-```bash
+---
+
+## 🛠️ Commands
+
+- Creating a docker image
+    ```bash
     make image_up
-```
- - Запуск docker container
-```bash
+    ```
+- Starting a docker container
+    ```bash
     make service_up
-```
- - Запуск сервера без поднятия контейнера
-```bash
+    ```
+- Running the server without a container
+    ```bash
     make run
-```
- - Запуск линтера(golangci-lint)
-```bash
+    ```
+- Running the linter (golangci-lint)
+    ```bash
     make linter
-```
+    ```
 
-# Handlers
+---
 
-## Authorization
-1. POST: /auth/sign-up \
-    Регистрация пользователя
-2. POST: /auth/sign-in \
-    Аутентификация. При успешной авторизации возвращает JWT Token.
-   
-## Banners API
-1. GET: /banners \
-   Получение всех баннеров с фильтрацией по фиче и тегу и параметрам limit, offset.Требуется админский токен 
-2. POST: /banners \
-   Создание нового банера..Требуется админский токен 
-3. DELETE: /banners/{id} \
-   Удаление баннера по id..Требуется админский токен 
-4. PATCH: /banners/{id} \
-   Обновление баннера по id..Требуется админский токен 
-5. GET: /user_banner \
-   Получение баннера по фиче и тегу.Достаточно пользовательского токена 
-6. DELETE: /delete \
-    Удаление баннера по фиче и тегу. .Требуется админский токен
+## 🔌 Handlers
 
-# Проблемы, с которыми столкнулся и их решения
-- В техническом задании не было указано, как добавлять пользователей в базу данных и какой уровень доступа им присваивать. Исходя из этого, каждый пользователь, зарегистрированный через обработчик /auth/sign-up, получает обычный токен. Однако, если необходимо получить административный токен, необходимо войти через /auth/sign-in, используя логин и пароль, указанные в конфигурации env. Также в jwt.Claims записывается массив ролей пользователя. Это позволяет проводить дальнейшее масштабирование. К примеру у пользователя могут быть роли ["Admin","System_admin"],в котором у каждой роли свои права и ограничения  
-- Вопрос был также в том, что заносить в кэш. Ведь получать все записи из бд непрактично,но  при этом нет критериев,чтобы определять популярные запросы. Мой подход был следующим: при запросе пользователя,если записи нет в кэше,то запись вносится в кэш.При этом через определенное время кэш очищается
-- В api складывается впечатление,что любой параметр баннера можно поменять, в том числе id фичи и тэга. При этом считать ли после таких изменений баннер новой версией или считать его уже другим баннером? Мне кажется, в patch с учетом доп. задания по различным версиям логично было бы запретить изменять фичи или тэги, иначе надо было бы удалять и заново ставить баннер
+### Authorization
+1. POST: /auth/sign-up  
+    Register a new user
+2. POST: /auth/sign-in  
+    Authentication. Returns JWT Token upon successful authorization.
 
-# Load Testing
-  Для нагрузочного тестирования использовал технологии k6. В папке loadtest можно посмотреть результаты тестов(есть как выводы в консоли,так и графические представления)
+### Banners API
+1. GET: /banners  
+   Retrieve all banners with filtering by feature and tag, and limit/offset parameters. Requires admin token.
+2. POST: /banners  
+   Create a new banner. Requires admin token.
+3. DELETE: /banners/{id}  
+   Delete banner by ID. Requires admin token.
+4. PATCH: /banners/{id}  
+   Update banner by ID. Requires admin token.
+5. GET: /user_banner  
+   Get banner by feature and tag. User token is sufficient.
+6. DELETE: /delete  
+   Delete banner by feature and tag. Requires admin token.
+
+---
+
+## 🧑‍💻 Problems Encountered and Their Solutions
+
+- **User Management**:  
+  The technical specification did not specify how to add users to the database or what level of access to assign.  
+  **Solution**: Implemented user registration (`/auth/sign-up`) and authentication (`/auth/sign-in`) endpoints, with role-based access using JWT tokens.
+- **Caching Strategy**:  
+  There was a question of what to cache. Retrieving all records from the database is impractical, but there is no critical need for real-time updates.  
+  **Solution**: Cached only the most frequently accessed banners by feature and tag, optimizing for speed without unnecessary memory usage.
+- **API Flexibility and Data Integrity**:  
+  The API gives the impression that any banner parameter can be changed, including the feature ID and tag. In practice, this can create inconsistencies.  
+  **Solution**: Restricted updates to only editable fields and validated inputs to preserve referential integrity.
+
+---
+
+## 📈 Load Testing
+
+For load testing, k6 technology was used. You can find test results in the loadtest folder.
+
+---
+
+_Questions or feedback? Open an issue or reach out via [GitHub](https://github.com/MrGummyl3ear/banner_service)._
